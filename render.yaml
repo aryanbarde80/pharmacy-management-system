@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: pharmacy-management-system
+    env: python
+    plan: free
+    autoDeploy: true
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: FIREBASE_STORAGE_BUCKET
+        value: ""
+      # If you use a Google service account JSON, add it in Render as a Secret File
+      # and set this environment variable to its mount path (e.g., /etc/secrets/firebase.json)
+      # - key: GOOGLE_APPLICATION_CREDENTIALS
+      #   value: "/etc/secrets/firebase.json"
+
