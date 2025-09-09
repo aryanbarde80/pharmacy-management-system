@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment files (never commit secrets)
+.env
+.env.*
+
+# Firebase credentials (keep service accounts out of the repo)
+firebase/*.json
+
+# Caches and reports
+.pytest_cache/
+.mypy_cache/
+.cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# IDE/editor
+.vscode/
+.idea/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Static build output (uncomment if you generate these)
+# staticfiles/
+

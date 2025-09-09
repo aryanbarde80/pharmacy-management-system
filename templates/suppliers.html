@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="{% if g.lang == 'ar' %}rtl{% endif %}" dir="{% if g.lang == 'ar' %}rtl{% else %}ltr{% endif %}">
+  <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+    <div class="text-{{ 'right' if g.lang == 'ar' else 'left' }}">
+      <h2 class="text-3xl font-bold text-gray-800 page-title">{{ _('suppliers') }}</h2>
+      <p class="mt-1 text-gray-500">{{ _('manage_suppliers') }}</p>
+    </div>
+    <div class="mt-0">
+      <a href="{{ url_for('add_supplier') }}" class="btn-primary flex items-center gap-2">
+        <span class="material-symbols-outlined">add</span>
+        <span>{{ _('add_supplier') }}</span>
+      </a>
+    </div>
+  </div>
+
+<!-- Supplier Stats -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+    <div class="card hover-raise p-5">
+      <div class="flex items-center justify-between gap-4">
+        <div class="text-{{ 'right' if g.lang == 'ar' else 'left' }}">
+          <p class="text-sm font-medium text-gray-500">{{ _('total_suppliers') }}</p>
+          <p class="mt-1 text-2xl font-bold text-gray-800">{{ stats.total_suppliers }}</p>
+        </div>
+        <div class="p-3 rounded-lg bg-blue-50 text-blue-600">
+          <span class="material-symbols-outlined">groups</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card hover-raise p-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500">{{ _('active_orders') }}</p>
+          <p class="mt-1 text-2xl font-bold text-gray-800">{{ stats.active_orders }}</p>
+        </div>
+        <div class="p-3 rounded-lg bg-amber-50 text-amber-600">
+          <span class="material-symbols-outlined">inventory_2</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card hover-raise p-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500">{{ _('expenses_this_month') }}</p>
+          <p class="mt-1 text-2xl font-bold text-gray-800">{{ stats.expenses_month }} DZD</p>
+        </div>
+        <div class="p-3 rounded-lg bg-green-50 text-green-600">
+          <span class="material-symbols-outlined">paid</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card hover-raise p-5">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-500">{{ _('average_delivery_time') }}</p>
+          <p class="mt-1 text-2xl font-bold text-gray-800">{{ stats.avg_delivery_days if stats.avg_delivery_days is not none else '-' }} <span class="text-base font-normal">{{ _('days') }}</span></p>
+        </div>
+        <div class="p-3 rounded-lg bg-purple-50 text-purple-600">
+          <span class="material-symbols-outlined">schedule</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Filters and Search -->
+  <div class="card p-5 mb-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="relative flex-1 max-w-md">
+        <div class="relative">
+          <span class="absolute inset-y-0 {{ 'left-0 pl-3' if g.lang == 'ar' else 'right-0 pr-3' }} flex items-center text-gray-400">
+            <span class="material-symbols-outlined">search</span>
+          </span>
+          <input type="text" 
+                 class="w-full {{ 'pr-4 pl-10' if g.lang == 'ar' else 'pl-4 pr-10' }} py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500" 
+                 placeholder="{{ _('search_suppliers') }}" 
+                 dir="{{ 'rtl' if g.lang == 'ar' else 'ltr' }}">
+        </div>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <select class="form-input text-sm py-1.5">
+          <option>{{ _('all_categories') }}</option>
+          <option>{{ _('medicines') }}</option>
+          <option>{{ _('medical_supplies') }}</option>
+          <option>{{ _('equipment') }}</option>
+          <option>{{ _('otc_products') }}</option>
+        </select>
+        <select class="form-input text-sm py-1.5">
+          <option>{{ _('all_statuses') }}</option>
+          <option>{{ _('active') }}</option>
+          <option>{{ _('inactive') }}</option>
+          <option>{{ _('temporarily_suspended') }}</option>
+        </select>
+        <button class="btn-ghost text-sm flex items-center gap-1">
+          <span class="material-symbols-outlined text-base">filter_alt</span>
+          {{ _('more_filters') }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+<!-- Suppliers Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% if suppliers and suppliers|length > 0 %}
+      {% for s in suppliers %}
+      {% set name = s.name or _('unnamed') %}
+      {% set initials = (name[:1]).upper() %}
+      {% set city = s.city or s.location or '-' %}
+      {% set contact = s.contact or s.contact_name or '' %}
+      {% set email = s.email or s.contact_email or '' %}
+      {% set phone = s.phone or s.contact_phone or '' %}
+      {% set status = s.status or _('active') %}
+      {% set status_l = status|string|lower %}
+      {% set cls = 'bg-green-100 text-green-800' %}
+      {% if 'inactive' in status_l or 'suspend' in status_l or 'موق' in status_l %}
+        {% set cls = 'bg-amber-100 text-amber-800' %}
+      {% elif 'cancel' in status_l or 'ملغ' in status_l %}
+        {% set cls = 'bg-red-100 text-red-800' %}
+      {% endif %}
+      <div class="card hover-raise group h-full">
+        <div class="p-5 h-full flex flex-col">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl font-bold">
+                {{ initials }}
+              </div>
+              <div class="text-{{ 'right' if g.lang == 'ar' else 'left' }}">
+                <h3 class="font-bold text-lg text-gray-900 group-hover:text-blue-600 transition-colors">{{ name }}</h3>
+                <div class="flex items-center text-sm text-gray-500 mt-1">
+                  <span class="material-symbols-outlined text-base {{ 'ml-0 mr-1' if g.lang == 'ar' else 'ml-1' }}">location_on</span>
+                  <span>{{ city }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="relative group">
+              <button class="text-gray-400 hover:text-gray-600 p-1">
+                <span class="material-symbols-outlined">more_vert</span>
+              </button>
+              <div class="hidden group-hover:block absolute {{ 'right-0' if g.lang == 'ar' else 'left-0' }} mt-1 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-10 border border-gray-100 dark:border-gray-700">
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">visibility</span>
+                    <span>{{ _('view') }}</span>
+                  </div>
+                </a>
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">edit</span>
+                    <span>{{ _('edit') }}</span>
+                  </div>
+                </a>
+                <a href="#" class="block px-4 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20">
+                  <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">delete</span>
+                    <span>{{ _('delete') }}</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="mt-5 pt-5 border-t border-gray-100 dark:border-gray-700 flex-1 flex flex-col">
+            <div class="grid grid-cols-1 gap-4 text-sm flex-1">
+              <div class="text-{{ 'right' if g.lang == 'ar' else 'left' }}">
+                <p class="text-gray-500 dark:text-gray-400">{{ _('contact') }}</p>
+                {% if contact %}<p class="font-medium text-gray-900 dark:text-white mt-1">{{ contact }}</p>{% endif %}
+                {% if email %}
+                <div class="flex items-center gap-2 mt-1 text-gray-600 dark:text-gray-300">
+                  <span class="material-symbols-outlined text-base">mail</span>
+                  <a href="mailto:{{ email }}" class="hover:text-blue-600 dark:hover:text-blue-400">{{ email }}</a>
+                </div>
+                {% endif %}
+                {% if phone %}
+                <div class="flex items-center gap-2 mt-1 text-gray-600 dark:text-gray-300">
+                  <span class="material-symbols-outlined text-base">call</span>
+                  <a href="tel:{{ phone }}" class="hover:text-blue-600 dark:hover:text-blue-400">{{ phone }}</a>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ cls }} dark:bg-opacity-20">
+                <span class="w-2 h-2 {{ 'ml-0 mr-1.5' if g.lang == 'ar' else 'ml-1.5' }} bg-current rounded-full"></span>
+                {{ status }}
+              </span>
+              <div class="flex gap-2">
+                {% if email %}
+                <a href="mailto:{{ email }}" class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" title="{{ _('email') }}">
+                  <span class="material-symbols-outlined">mail</span>
+                </a>
+                {% endif %}
+                {% if phone %}
+                <a href="tel:{{ phone }}" class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg" title="{{ _('call') }}">
+                  <span class="material-symbols-outlined">call</span>
+                </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="col-span-full text-center text-gray-500 py-10">{{ _('no_suppliers') }}</div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Summary -->
+<div class="mt-6 text-sm text-gray-500 dark:text-gray-400 text-{{ 'right' if g.lang == 'ar' else 'left' }}">
+  {{ _('total_suppliers_count') }}: <span class="font-medium text-gray-700 dark:text-gray-200">{{ suppliers|length if suppliers else 0 }}</span>
+</div>
+
+<style>
+  /* RTL specific styles */
+  .rtl .supplier-card {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  .rtl .supplier-actions {
+    left: auto;
+    right: 0;
+  }
+  
+  .rtl .supplier-contact {
+    margin-right: 0;
+    margin-left: 0.5rem;
+  }
+  
+  /* Dark mode adjustments */
+  .dark .supplier-card {
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+  
+  .dark .supplier-card:hover {
+    border-color: #4b5563;
+  }
+  
+  .dark .supplier-name {
+    color: #f9fafb;
+  }
+  
+  .dark .supplier-meta {
+    color: #9ca3af;
+  }
+  
+  .dark .supplier-actions {
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+  
+  .dark .supplier-actions a {
+    color: #e5e7eb;
+  }
+  
+  .dark .supplier-actions a:hover {
+    background-color: #374151;
+  }
+</style>
+  </div>
+{% endblock %}

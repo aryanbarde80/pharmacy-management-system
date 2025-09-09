@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+  <div>
+    <h2 class="text-3xl font-bold text-gray-800 page-title">{{ _('reports') }}</h2>
+    <p class="mt-1 text-gray-500">{{ _('reports_description') }}</p>
+  </div>
+  <div class="mt-4 md:mt-0 flex gap-3">
+<a href="{{ url_for('create_order') }}" class="btn-ghost flex items-center gap-2">
+      <span class="material-symbols-outlined">file_download</span>
+      {{ _('export') }}
+    </a>
+<a href="{{ url_for('reports_create') }}" class="btn-primary flex items-center gap-2">
+      <span class="material-symbols-outlined">add</span>
+      {{ _('new_report') }}
+    </a>
+  </div>
+</div>
+
+<!-- Report Filters -->
+<div class="card p-5 mb-6">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ _('report_type') }}</label>
+      <select class="form-input w-full">
+        <option>{{ _('sales_report') }}</option>
+        <option>{{ _('inventory_report') }}</option>
+        <option>{{ _('expiry_report') }}</option>
+        <option>{{ _('supplier_performance') }}</option>
+        <option>{{ _('customer_purchase_log') }}</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ _('time_range') }}</label>
+      <select class="form-input w-full">
+        <option>{{ _('last_7_days') }}</option>
+        <option>{{ _('this_month') }}</option>
+        <option>{{ _('last_month') }}</option>
+        <option>{{ _('this_quarter') }}</option>
+        <option>{{ _('this_year') }}</option>
+        <option>{{ _('custom_range') }}</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">{{ _('category') }}</label>
+      <select class="form-input w-full">
+        <option>{{ _('all_categories') }}</option>
+        <option>{{ _('prescriptions') }}</option>
+        <option>{{ _('non_prescription') }}</option>
+        <option>{{ _('medical_supplies') }}</option>
+        <option>{{ _('equipment') }}</option>
+      </select>
+    </div>
+    <div class="flex items-end">
+<a href="{{ url_for('reports') }}" class="btn-primary w-full flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined">insights</span>
+        {{ _('generate_report') }}
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Reports Table (real data) -->
+<div class="card overflow-hidden" dir="rtl">
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead class="bg-gray-50">
+        <tr class="text-right text-sm font-medium text-gray-500">
+          <th class="px-6 py-3">{{ _('report') }}</th>
+          <th class="px-6 py-3">{{ _('type') }}</th>
+          <th class="px-6 py-3">{{ _('period') }}</th>
+          <th class="px-6 py-3">{{ _('created_at') }}</th>
+          <th class="px-6 py-3">{{ _('status') }}</th>
+          <th class="px-6 py-3">{{ _('actions') }}</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% if reports and reports|length > 0 %}
+          {% for r in reports %}
+          {% set title = r.title or r.name or ('Report #' ~ r.id) %}
+          {% set rtype = r.type or r.category or '-' %}
+          {% set period = r.period or (r.start_date ~ ' - ' ~ r.end_date if r.start_date and r.end_date else '-') %}
+          {% set created = r.created_at %}
+          {% set status = r.status or '-' %}
+          {% set status_l = status|string|lower %}
+          {% set cls = 'bg-gray-100 text-gray-800' %}
+          {% if 'fail' in status_l or 'error' in status_l or 'ملغ' in status_l %}
+            {% set cls = 'bg-red-100 text-red-800' %}
+          {% elif 'done' in status_l or 'ready' in status_l or 'تم' in status_l %}
+            {% set cls = 'bg-green-100 text-green-800' %}
+          {% elif 'process' in status_l or 'جاري' in status_l %}
+            {% set cls = 'bg-blue-100 text-blue-800' %}
+          {% endif %}
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 font-medium text-gray-900">{{ title }}</td>
+            <td class="px-6 py-4">{{ rtype }}</td>
+            <td class="px-6 py-4">{{ period }}</td>
+            <td class="px-6 py-4">
+              {{ created.strftime('%Y-%m-%d %H:%M') if created and created.strftime is defined else (created if created else '-') }}
+            </td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ cls }}">{{ status }}</span>
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex gap-2">
+                <button class="text-blue-600 hover:bg-blue-50 p-1.5 rounded-lg" title="View">
+                  <span class="material-symbols-outlined text-xl">visibility</span>
+                </button>
+                <button class="text-gray-400 hover:bg-gray-100 p-1.5 rounded-lg" title="Download">
+                  <span class="material-symbols-outlined text-xl">download</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="6" class="px-6 py-8 text-center text-gray-500">{{ _('no_reports') }}</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+  <div class="px-6 py-4 border-t border-gray-100 text-sm text-gray-500">{{ _('total_reports') }}: <span class="font-medium">{{ reports|length if reports else 0 }}</span></div>
+</div>
+{% endblock %}

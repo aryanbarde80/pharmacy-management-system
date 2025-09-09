@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+  <div>
+    <h2 class="text-3xl font-bold text-gray-800 page-title">{{ _('inventory') }}</h2>
+    <p class="mt-1 text-gray-500">{{ _('manage_inventory') }}</p>
+  </div>
+  <div class="mt-4 md:mt-0 flex gap-3">
+    <a href="{{ url_for('create_order') }}" class="btn-primary flex items-center gap-2">
+      <span class="material-symbols-outlined">shopping_cart</span>
+      {{ _('create_order') }}
+    </a>
+    <button class="btn-ghost flex items-center gap-2">
+      <span class="material-symbols-outlined">inventory_2</span>
+      {{ _('stock_check') }}
+    </button>
+    <a href="{{ url_for('add_medicine_form') }}" class="btn-primary flex items-center gap-2">
+      <span class="material-symbols-outlined">add</span>
+      {{ _('add_item') }}
+    </a>
+  </div>
+</div>
+
+<!-- Inventory Stats -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+  <div class="card hover-raise p-5">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-500">{{ _('total_items') }}</p>
+        <p class="mt-1 text-2xl font-bold text-gray-800">{{ inv_stats.total_items }}</p>
+      </div>
+      <div class="p-3 rounded-lg bg-blue-50 text-blue-600">
+        <span class="material-symbols-outlined">inventory_2</span>
+      </div>
+    </div>
+    <div class="mt-4">
+      <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
+        <span>{{ _('active_items') }}</span>
+        <span>{{ inv_stats.active_items }}</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-1.5">
+        <div class="bg-blue-500 h-1.5 rounded-full" style="width: {{ inv_stats.active_pct }}%; margin-right: auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card hover-raise p-5">
+    <div class="flex items-center justify-between">
+      <div>
+  <p class="text-sm font-medium text-gray-500">{{ _('low_stock') }}</p>
+        <p class="mt-1 text-2xl font-bold text-amber-600">{{ inv_stats.low_stock }}</p>
+      </div>
+      <div class="p-3 rounded-lg bg-amber-50 text-amber-600">
+        <span class="material-symbols-outlined">warning</span>
+      </div>
+    </div>
+    <div class="mt-4">
+      <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
+        <span>{{ _('critical') }}</span>
+        <span>{{ inv_stats.critical }}</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-1.5">
+        <div class="bg-amber-500 h-1.5 rounded-full" style="width: {{ inv_stats.low_pct }}%; margin-right: auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card hover-raise p-5">
+    <div class="flex items-center justify-between">
+      <div>
+  <p class="text-sm font-medium text-gray-500">{{ _('out_of_stock') }}</p>
+        <p class="mt-1 text-2xl font-bold text-rose-600">{{ inv_stats.out_of_stock }}</p>
+      </div>
+      <div class="p-3 rounded-lg bg-rose-50 text-rose-600">
+        <span class="material-symbols-outlined">cancel</span>
+      </div>
+    </div>
+    <div class="mt-4">
+      <div class="flex items-center justify-between text-xs text-gray-500 mb-1">
+        <span>{{ _('on_order') }}</span>
+        <span>{{ inv_stats.on_order }}</span>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-1.5">
+        <div class="bg-rose-500 h-1.5 rounded-full" style="width: {{ inv_stats.on_order_pct }}%; margin-right: auto;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card hover-raise p-5">
+    <div class="flex items-center justify-between">
+      <div>
+  <p class="text-sm font-medium text-gray-500">{{ _('inventory_value') }}</p>
+  <p class="mt-1 text-2xl font-bold text-emerald-600">{{ '{:,.0f}'.format(inv_stats.inventory_value) }} DZD</p>
+      </div>
+      <div class="p-3 rounded-lg bg-emerald-50 text-emerald-600">
+        <span class="material-symbols-outlined">paid</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filters and Search -->
+<div class="card p-5 mb-6">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div class="relative w-full max-w-md">
+      <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">search</span>
+      <input type="text" 
+             class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-gray-700 placeholder-gray-500"
+             placeholder="{{ _('search_inventory') }}"
+             autocomplete="off">
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <div class="relative">
+        <select class="appearance-none bg-white border border-gray-200 rounded-lg py-2 pl-3 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+          <option>{{ _('all_categories') }}</option>
+          <option>{{ _('antibiotics') }}</option>
+          <option>{{ _('pain_relievers') }}</option>
+          <option>{{ _('vitamins') }}</option>
+          <option>{{ _('first_aid') }}</option>
+        </select>
+        <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-lg">
+          expand_more
+        </span>
+      </div>
+      <div class="relative">
+        <select class="appearance-none bg-white border border-gray-200 rounded-lg py-2 pl-3 pr-8 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+          <option>{{ _('all_statuses') }}</option>
+          <option>{{ _('in_stock') }}</option>
+          <option>{{ _('low_stock') }}</option>
+          <option>{{ _('out_of_stock') }}</option>
+        </select>
+        <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-lg">
+          expand_more
+        </span>
+      </div>
+      <button class="btn-ghost text-sm flex items-center gap-1">
+        <span class="material-symbols-outlined text-base">filter_alt</span>
+        {{ _('more_filters') }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Inventory Table -->
+<div class="card overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead class="bg-gray-50">
+        <tr class="text-left text-sm font-medium text-gray-500">
+          <th class="px-6 py-3">{{ _('item') }}</th>
+          <th class="px-6 py-3">{{ _('category') }}</th>
+          <th class="px-6 py-3">{{ _('stock') }}</th>
+          <th class="px-6 py-3">{{ _('price') }}</th>
+          <th class="px-6 py-3">{{ _('value') }}</th>
+          <th class="px-6 py-3">{{ _('status') }}</th>
+          <th class="px-6 py-3">{{ _('actions') }}</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% if items and items|length > 0 %}
+          {% for it in items %}
+          {% set stock = (it.stock|default(0)|int) %}
+          {% set price = it.price if it.price is defined else None %}
+          {% set value = (stock * price) if (price is not none) else None %}
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4 text-left">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-blue-600">medication</span>
+                </div>
+                <div>
+                  <div class="font-medium text-gray-900">{{ it.name or _('unnamed') }}</div>
+                  <div class="text-sm text-gray-500">{{ it.code or it.id or '' }}</div>
+                </div>
+              </div>
+            </td>
+              <td class="px-6 py-4">
+              <span class="px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">{{ it.category or '-' }}</span>
+            </td>
+            <td class="px-6 py-4">
+              <div class="font-medium">{{ stock }}</div>
+              {% if it.min is defined and it.min %}<div class="text-xs text-gray-500">{{ _('minimum') }}: {{ it.min }}</div>{% endif %}
+            </td>
+            <td class="px-6 py-4 font-medium">{% if price is not none %}{{ price }} DZD{% else %}-{% endif %}</td>
+            <td class="px-6 py-4 font-medium">{% if value is not none %}{{ value }} DZD{% else %}-{% endif %}</td>
+            <td class="px-6 py-4">
+              {% if stock <= 0 %}
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                  <span class="w-1.5 h-1.5 ml-1.5 bg-red-500 rounded-full"></span>
+                  {{ _('out_of_stock') }}
+                </span>
+              {% elif it.min is defined and it.min and stock < (it.min|int) %}
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                  <span class="w-1.5 h-1.5 ml-1.5 bg-amber-500 rounded-full"></span>
+                  {{ _('low_quantity') }}
+                </span>
+              {% else %}
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  <span class="w-1.5 h-1.5 ml-1.5 bg-green-500 rounded-full"></span>
+                  {{ _('in_stock') }}
+                </span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4">
+              <div class="flex gap-2">
+                <a href="#" class="text-blue-600 hover:text-blue-800 hover:underline">{{ _('edit') }}</a>
+                <a href="#" class="text-red-600 hover:text-red-800 hover:underline">{{ _('delete') }}</a>
+                <button class="text-gray-400 hover:bg-gray-100 p-1.5 rounded-lg" title="More">
+                  <span class="material-symbols-outlined text-xl">more_vert</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+              <td colspan="7" class="px-6 py-8 text-center text-gray-500">{{ _('no_items') }}</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Summary -->
+  <div class="px-6 py-4 border-t border-gray-100">
+    <div class="text-sm text-gray-500">Total items: <span class="font-medium">{{ items|length if items else 0 }}</span></div>
+  </div>
+</div>
+{% endblock %}

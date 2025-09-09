@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="{% if lang == 'ar' %}rtl{% endif %}">
+  <div class="flex items-center justify-between mb-6 flex-col sm:flex-row gap-4">
+    <div class="text-center sm:text-right w-full">
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-white">{{ _('create_order') }}</h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400">{{ _('order_details') }}</p>
+    </div>
+    <div class="w-full sm:w-auto">
+      <a href="{{ url_for('orders') }}" class="btn-ghost w-full sm:w-auto text-center">
+        <i class="fas fa-arrow-{{ 'left' if lang == 'en' else 'right' }} mr-2"></i>
+        {{ _('back_to_orders') }}
+      </a>
+    </div>
+  </div>
+
+  <form action="{{ url_for('create_order_submit') }}" method="post" class="space-y-6 card p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} p-4 mb-4 rounded">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ _('supplier') }}</label>
+        <select name="supplier" class="form-input w-full mt-1" required>
+          <option value="">{{ _('select_supplier') }}</option>
+          {% for s in suppliers %}
+            <option value="{{ s.id }}">{{ s.name or s.company or s.id }}</option>
+          {% endfor %}
+        </select>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ _('or_enter_new') }}</p>
+        <input type="text" name="supplier_text" class="form-input w-full mt-1" placeholder="{{ _('new_supplier_placeholder') }}">
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ _('order_date') }}</label>
+        <input type="date" name="order_date" class="form-input w-full mt-1">
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ _('optional_date') }}</p>
+      </div>
+    </div>
+
+    <div class="space-y-4">
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ _('order_items') }}</label>
+      <div id="order-lines" class="space-y-3">
+        <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center order-line p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+          <select name="item_id[]" class="form-input flex-1 w-full" required>
+            <option value="">{{ _('select_item') }}</option>
+            {% for it in items %}
+              <option value="{{ it.id }}" data-stock="{{ it.stock_quantity or 0 }}">
+                {{ it.name or it.id }} {% if it.category %}- {{ it.category }}{% endif %}
+              </option>
+            {% endfor %}
+          </select>
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <input type="number" name="quantity[]" min="1" value="1" class="form-input w-24 text-center" required>
+            <button type="button" class="btn-ghost remove-line text-red-600 dark:text-red-400" title="{{ _('remove') }}">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-2">
+        <button type="button" id="add-line" class="btn-secondary">
+          <i class="fas fa-plus mr-2"></i>
+          {{ _('add_item') }}
+        </button>
+      </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <a href="{{ url_for('orders') }}" class="btn-ghost text-center">
+        {{ _('cancel') }}
+      </a>
+      <button type="submit" class="btn-primary">
+        <i class="fas fa-save mr-2"></i>
+        {{ _('create_order_btn') }}
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const container = document.getElementById('order-lines');
+  const addBtn = document.getElementById('add-line');
+  
+  // Add new order line
+  function addNewLine() {
+    const firstLine = container.querySelector('.order-line');
+    const newLine = firstLine.cloneNode(true);
+    
+    // Reset values
+    const select = newLine.querySelector('select');
+    const input = newLine.querySelector('input[type="number"]');
+    
+    if (select) {
+      select.selectedIndex = 0;
+      // Update event listener for stock validation
+      select.addEventListener('change', validateStock);
+    }
+    if (input) {
+      input.value = 1;
+      input.addEventListener('input', validateStock);
+    }
+    
+    container.appendChild(newLine);
+    updateRemoveButtons();
+  }
+  
+  // Validate stock quantity
+  function validateStock(e) {
+    const line = e.target.closest('.order-line');
+    const select = line.querySelector('select');
+    const input = line.querySelector('input[type="number"]');
+    
+    if (!select || !input) return;
+    
+    const selectedOption = select.options[select.selectedIndex];
+    const maxStock = parseInt(selectedOption.dataset.stock) || 0;
+    
+    if (parseInt(input.value) > maxStock) {
+      input.setCustomValidity(`{{ _('max_stock') }}: ${maxStock}`);
+      input.reportValidity();
+    } else {
+      input.setCustomValidity('');
+    }
+  }
+  
+  // Update remove buttons state
+  function updateRemoveButtons() {
+    const lines = container.querySelectorAll('.order-line');
+    const removeButtons = container.querySelectorAll('.remove-line');
+    
+    // Show/hide remove button based on number of lines
+    removeButtons.forEach(btn => {
+      btn.style.display = lines.length > 1 ? 'inline-flex' : 'none';
+    });
+  }
+  
+  // Add event listeners
+  addBtn.addEventListener('click', addNewLine);
+  
+  container.addEventListener('click', function(e) {
+    // Handle remove button click
+    if (e.target.closest('.remove-line')) {
+      e.preventDefault();
+      const line = e.target.closest('.order-line');
+      if (container.querySelectorAll('.order-line').length > 1) {
+        line.remove();
+        updateRemoveButtons();
+      }
+    }
+  });
+  
+  // Add stock validation to existing selects and inputs
+  document.querySelectorAll('.order-line select, .order-line input[type="number"]').forEach(el => {
+    el.addEventListener('change', validateStock);
+    el.addEventListener('input', validateStock);
+  });
+  
+  // Initialize remove buttons state
+  updateRemoveButtons();
+});
+</script>
+
+<style>
+/* RTL Support */
+.rtl [dir="rtl"] .rtl\:mr-2 {
+  margin-right: 0 !important;
+  margin-left: 0.5rem !important;
+}
+
+/* Dark mode adjustments */
+.dark .form-input {
+  @apply bg-gray-700 border-gray-600 text-white;
+}
+
+.dark .form-input:focus {
+  @apply border-blue-500 ring-blue-500;
+}
+
+.dark .btn-ghost {
+  @apply text-gray-200 hover:bg-gray-700;
+}
+
+/* Responsive adjustments */n@media (max-width: 640px) {
+  .order-line {
+    @apply flex-col items-stretch gap-2;
+  }
+  
+  .order-line .form-input {
+    @apply w-full;
+  }
+}
+</style>
+
+{% endblock %}

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <style>
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
+    input:focus { outline: none; box-shadow: 0 0 0 3px rgba(8,145,178,0.15); }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-cyan-50 to-blue-100 flex items-center justify-center p-4">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-8">
+      <div class="w-16 h-16 rounded-2xl bg-cyan-600 text-white grid place-items-center mx-auto mb-3 shadow-lg">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor"><path d="M10 2a1 1 0 0 0-1 1v2.07A7.002 7.002 0 0 0 5.062 11H4a1 1 0 1 0 0 2h1.062A7.002 7.002 0 0 0 9 18.93V21a1 1 0 1 0 2 0v-2.07A7.002 7.002 0 0 0 18.938 13H20a1 1 0 1 0 0-2h-1.062A7.002 7.002 0 0 0 11 5.07V3a1 1 0 0 0-1-1Z"/></svg>
+      </div>
+  <h1 class="text-2xl font-bold text-gray-800">Create a new account</h1>
+  <p class="text-gray-600 mt-1">Sign up with your email and a password</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl">
+      <div class="p-6 sm:p-8">
+        <div id="errorBox" class="hidden mb-4 p-3 rounded-lg text-sm bg-red-50 text-red-700 border border-red-200" role="alert"></div>
+        <form id="signupForm" class="space-y-5">
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+            <input id="email" name="email" type="email" dir="ltr" autocomplete="email" required class="w-full rounded-lg border border-gray-300 px-3.5 py-3 text-gray-900 placeholder-gray-400 focus:border-cyan-500" placeholder="you@example.com" />
+          </div>
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input id="password" name="password" type="password" dir="ltr" autocomplete="new-password" required minlength="6" class="w-full rounded-lg border border-gray-300 px-3.5 py-3 text-gray-900 placeholder-gray-400 focus:border-cyan-500" placeholder="••••••••" />
+            <p class="mt-1 text-xs text-gray-500">Minimum 6 characters</p>
+          </div>
+          <button id="submitBtn" type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-3">
+            <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white hidden" id="spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+            <span id="btnText">Create account</span>
+          </button>
+        </form>
+  <p class="mt-4 text-sm text-gray-600 text-center">Already have an account? <a href="/login" class="text-cyan-700 hover:text-cyan-800">Sign in</a></p>
+      </div>
+    </div>
+
+  <p class="mt-6 text-center text-xs text-gray-500">© 2025 All rights reserved</p>
+  </div>
+
+  <!-- Firebase SDK (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+  <!-- Project Firebase Config (client-side) -->
+  <script src="{{ url_for('static', filename='js/firebase-config.js') }}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('signupForm');
+      const emailEl = document.getElementById('email');
+      const passEl = document.getElementById('password');
+      const errorBox = document.getElementById('errorBox');
+      const btn = document.getElementById('submitBtn');
+      const spinner = document.getElementById('spinner');
+      const btnText = document.getElementById('btnText');
+
+      const auth = (window.firebaseAuth || (window.firebase && firebase.auth && firebase.auth())) || null;
+
+      function showError(msg) {
+        errorBox.textContent = msg || 'An error occurred. Please try again.';
+        errorBox.classList.remove('hidden');
+      }
+      function hideError() { errorBox.classList.add('hidden'); }
+
+      function setLoading(loading) {
+        btn.disabled = loading;
+        spinner.classList.toggle('hidden', !loading);
+        btnText.textContent = loading ? 'Creating account...' : 'Create Account';
+      }
+
+      if (!auth) {
+        showError('Failed to initialize Firebase. Please check the configuration in static/js/firebase-config.js');
+        return;
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        hideError();
+        const email = emailEl.value.trim();
+        const password = passEl.value;
+        if (!email || !password) { showError('Please enter both email and password'); return; }
+        setLoading(true);
+        try {
+          // Create account in Firebase Auth
+          const cred = await auth.createUserWithEmailAndPassword(email, password);
+          const user = cred.user;
+
+          // Obtain ID token and establish server session
+          const idToken = await user.getIdToken(true);
+          const res = await fetch('/verify-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ token: idToken })
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) { throw new Error(data && data.error ? data.error : 'فشل التحقق من الجلسة'); }
+
+          // Redirect to dashboard
+          window.location.href = '/dashboard';
+        } catch (err) {
+          let msg = 'An error occurred while creating the account';
+          if (err && err.code) {
+            switch (err.code) {
+              case 'auth/email-already-in-use': msg = 'This email is already in use'; break;
+              case 'auth/invalid-email': msg = 'Invalid email address'; break;
+              case 'auth/weak-password': msg = 'Weak password. Please use at least 6 characters'; break;
+              case 'auth/operation-not-allowed': msg = 'Account creation is not enabled'; break;
+              default: msg = err.message || msg;
+            }
+          } else if (err && err.message) {
+            msg = err.message;
+          }
+          console.error('Signup error:', err);
+          showError(msg);
+        } finally {
+          setLoading(false);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+

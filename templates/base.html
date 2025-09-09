@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="{{ g.lang }}" dir="{% if g.lang == 'ar' %}rtl{% else %}ltr{% endif %}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ _('pharmacy_management') }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Language Switcher */
+    .lang-switcher {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .lang-switcher .dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      z-index: 10;
+      min-width: 160px;
+      padding: 4px 0;
+      margin-top: 4px;
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .lang-switcher .dropdown button {
+      width: 100%;
+      text-align: left;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      color: #374151;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .lang-switcher .dropdown button:hover {
+      background-color: #f3f4f6;
+    }
+    
+    .lang-switcher .dropdown button.active {
+      background-color: #f3f4f6;
+      color: #0ea5a6;
+      font-weight: 500;
+    }
+    
+    .lang-switcher .dropdown button[dir="rtl"] {
+      text-align: right;
+    }
+    
+    /* Flag icon styles */
+    .flag-icon {
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+    
+    [dir="rtl"] {
+      text-align: right;
+    }
+    
+    /* Theme tokens */
+    :root{
+      --primary-color: #0ea5a6; /* teal */
+      --primary-600: #059669;
+      --accent: #06b6d4; /* cyan accent */
+      --bg-start: #f8fbfc;
+      --bg-end: #eef7f6;
+      --muted-bg: linear-gradient(180deg,var(--bg-start),var(--bg-end));
+      --surface: rgba(255,255,255,0.86);
+      --glass-border: rgba(14,165,166,0.08);
+      --muted-text: #6b7280;
+    }
+
+    /* Base */
+    html,body{height:100%}
+    body { font-family: 'Inter', sans-serif; background: var(--muted-bg); -webkit-font-smoothing:antialiased; color:#0f172a }
+
+    /* Sidebar */
+    .sidebar { 
+      background: white; 
+      border-right: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.02);
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-header {
+      padding: 0 1.25rem 1.5rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .sidebar-logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-600);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .nav-item { 
+      color: #64748b; 
+      display: flex; 
+      align-items: center;
+      padding: 0.6rem 1.25rem;
+      margin: 0.25rem 0.75rem;
+      border-radius: 0.75rem;
+      transition: all 0.2s ease;
+      font-size: 0.9375rem;
+      font-weight: 500;
+    }
+    
+    .nav-item .material-symbols-outlined {
+      font-size: 1.4rem;
+      margin-right: 0.75rem;
+      color: #94a3b8;
+      transition: all 0.2s ease;
+    }
+    
+    .nav-item:hover { 
+      background: #f1f5f9;
+      color: #0f172a;
+      transform: translateX(4px);
+    }
+    
+    .nav-item:hover .material-symbols-outlined {
+      color: var(--primary-600);
+    }
+    
+    .nav-item.active { 
+      background: #f0fdfa;
+      color: var(--primary-600);
+      font-weight: 600;
+      box-shadow: 0 2px 10px -2px rgba(13, 148, 136, 0.1);
+    }
+    
+    .nav-item.active .material-symbols-outlined {
+      color: var(--primary-600);
+    }
+    
+    .sidebar-footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 1.5rem;
+      background: #f8fafc;
+      border-top: 1px solid rgba(0, 0, 0, 0.03);
+    }
+    
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #06b6d4, #0ea5a6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+    
+    .user-info {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .user-name {
+      font-weight: 600;
+      color: #0f172a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .user-role {
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    /* cards */
+    .card{ background: var(--surface); border-radius: 1rem; border:1px solid var(--glass-border); box-shadow: 0 10px 30px rgba(2,6,23,0.06); }
+    .hover-raise{ transition: transform .26s cubic-bezier(.2,.9,.2,1), box-shadow .26s }
+    .hover-raise:hover{ transform: translateY(-8px); box-shadow: 0 20px 40px rgba(2,6,23,0.08) }
+
+    /* animations */
+    @keyframes fadeInUp{ from{ opacity:0; transform: translateY(8px) } to { opacity:1; transform: translateY(0) } }
+    .fade-in{ animation: fadeInUp .5s cubic-bezier(.2,.9,.2,1) var(--delay,0s) both }
+
+    /* tables */
+    .table-row-anim{ transition: background .16s ease, transform .16s ease }
+    .table-row-anim:hover{ transform: translateY(-4px); background: linear-gradient(90deg, rgba(6,182,212,0.03), rgba(6,182,212,0.02)) }
+
+    /* headers */
+    .page-title{ position:relative; display:inline-block }
+    .page-title:after{ content:''; position:absolute; left:0; bottom:-8px; height:5px; width:64px; background:linear-gradient(90deg,var(--primary-color),var(--accent)); border-radius:8px; opacity:0.95 }
+
+    /* charts */
+    .chart-wrap{ min-height:240px }
+
+    /* Buttons */
+    .btn-primary{ background: linear-gradient(90deg,var(--primary-color),var(--primary-600)); color:white; padding:.5rem .75rem; border-radius:.6rem; box-shadow: 0 8px 20px rgba(6,182,212,0.12); border: none }
+    .btn-ghost{ background:transparent; border:1px solid rgba(15,23,42,0.06); color:var(--muted-text); padding:.45rem .65rem; border-radius:.6rem }
+
+    /* form inputs */
+    input.form-input{ border-radius:.6rem; border:1px solid rgba(2,6,23,0.06); padding:.5rem .75rem }
+
+    /* small responsive tweaks */
+    @media (max-width:1024px){ .sidebar{ position:fixed; transform:translateX(-6px) } }
+  </style>
+</head>
+  <body class="text-gray-800" dir="{% if g.lang == 'ar' %}rtl{% else %}ltr{% endif %}">
+  <!-- Flash Messages -->
+  <div class="fixed top-4 right-4 z-50 w-96">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="mb-3 p-4 rounded-lg shadow-lg {% if category == 'error' %}bg-red-50 text-red-700 border border-red-200{% else %}bg-green-50 text-green-700 border border-green-200{% endif %}">
+            <div class="flex items-center">
+              <span class="material-symbols-outlined mr-2">{% if category == 'error' %}error{% else %}check_circle{% endif %}</span>
+              <span>{{ message }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+  
+  {% if request.path == url_for('login') %}
+    <div class="min-h-screen">
+      {% block auth_content %}{% endblock %}
+    </div>
+  {% else %}
+  <div class="flex h-screen overflow-hidden">
+  <aside class="sidebar w-64 flex-shrink-0 py-6 fixed lg:relative lg:translate-x-0 -translate-x-full transition-all duration-300 ease-in-out z-20 h-full flex flex-col">
+    <!-- Logo -->
+    <div class="sidebar-header px-6">
+  <div class="sidebar-logo">
+        <svg class="h-8 w-8" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13.8261 17.4264C16.7203 18.1174 20.2244 18.5217 24 18.5217C27.7756 18.5217 31.2797 18.1174 34.1739 17.4264C36.9144 16.7722 39.9967 15.2331 41.3563 14.1648L24.8486 40.6391C24.4571 41.267 23.5429 41.267 23.1514 40.6391L6.64374 14.1648C8.00331 15.2331 11.0856 16.7722 13.8261 17.4264Z" fill="currentColor"></path>
+          <path clip-rule="evenodd" d="M39.998 12.236C39.9944 12.2537 39.9875 12.2845 39.9748 12.3294C39.9436 12.4399 39.8949 12.5741 39.8346 12.7175C39.8168 12.7597 39.7989 12.8007 39.7813 12.8398C38.5103 13.7113 35.9788 14.9393 33.7095 15.4811C30.9875 16.131 27.6413 16.5217 24 16.5217C20.3587 16.5217 17.0125 16.131 14.2905 15.4811C12.0012 14.9346 9.44505 13.6897 8.18538 12.8168C8.17384 12.7925 8.16216 12.767 8.15052 12.7408C8.09919 12.6249 8.05721 12.5114 8.02977 12.411C8.00356 12.3152 8.00039 12.2667 8.00004 12.2612C8.00004 12.261 8 12.2607 8.00004 12.2612C8.00004 12.2359 8.0104 11.9233 8.68485 11.3686C9.34546 10.8254 10.4222 10.2469 11.9291 9.72276C14.9242 8.68098 19.1919 8 24 8C28.8081 8 33.0758 8.68098 36.0709 9.72276C37.5778 10.2469 38.6545 10.8254 39.3151 11.3686C39.9006 11.8501 39.9857 12.1489 39.998 12.236Z" fill="currentColor" fill-rule="evenodd"></path>
+        </svg>
+  <span>{{ _('pharmacy_management') }}</span>
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="flex-1 flex flex-col">
+      <div class="flex-1 space-y-1 px-2 py-4">
+        <a href="{{ url_for('dashboard') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if active == 'dashboard' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+          <span class="material-symbols-outlined mr-3">dashboard</span>
+          {{ _('dashboard') }}
+        </a>
+        <a href="{{ url_for('medicines') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if active == 'medicines' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+          <span class="material-symbols-outlined mr-3">medication</span>
+          {{ _('medicines') }}
+        </a>
+        <a href="{{ url_for('orders') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if active == 'orders' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+          <span class="material-symbols-outlined mr-3">receipt_long</span>
+          {{ _('orders') }}
+        </a>
+        <a href="{{ url_for('inventory') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if active == 'inventory' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+          <span class="material-symbols-outlined mr-3">inventory_2</span>
+          {{ _('inventory') }}
+        </a>
+        <a href="{{ url_for('suppliers') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if active == 'suppliers' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+          <span class="material-symbols-outlined mr-3">local_shipping</span>
+          {{ _('suppliers') }}
+        </a>
+        <a href="{{ url_for('reports') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if active == 'reports' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+          <span class="material-symbols-outlined mr-3">bar_chart</span>
+          {{ _('reports') }}
+        </a>
+        <a href="{{ url_for('contact') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if active == 'contact' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+          <span class="material-symbols-outlined mr-3">contact_support</span>
+          {{ _('contact') }}
+        </a>
+      </div>
+    </nav>
+    
+    <!-- User Profile -->
+    <div class="sidebar-footer">
+          <div class="user-profile">
+        <div class="user-avatar">
+          <span class="material-symbols-outlined">person</span>
+        </div>
+        <div class="user-info">
+          <p class="user-name">{% if session.user %}{{ session.user.name }}{% else %}User{% endif %}</p>
+          <p class="user-role">{% if session.user %}{{ session.user.role }}{% else %}Visitor{% endif %}</p>
+        </div>
+        <a href="{{ url_for('logout') }}" class="text-gray-400 hover:text-rose-500 transition-colors" title="Logout">
+          <span class="material-symbols-outlined">logout</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="flex-1 flex flex-col overflow-y-auto">
+    <header class="bg-white/60 backdrop-blur-md sticky top-0 z-10 border-b border-gray-200">
+      <div class="mx-auto px-6 py-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <a href="{{ url_for('logout') }}" class="text-gray-600 hover:text-rose-600 transition-colors flex items-center gap-1">
+              <span class="material-symbols-outlined">logout</span>
+              <span class="hidden md:inline">Logout</span>
+            </a>
+            <button class="lg:hidden text-gray-600"><span class="material-symbols-outlined">menu</span></button>
+            <div class="relative w-full max-w-xs">
+              <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">search</span>
+              <input class="w-full pl-10 pr-4 py-2 bg-gray-100 border border-transparent rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent transition text-gray-700 placeholder-gray-500" 
+                     placeholder="{{ _('search_placeholder') }}" 
+                     type="text"
+                     id="global-search"
+                     autocomplete="off"
+                     dir="{{ 'rtl' if g.lang == 'ar' else 'ltr' }}"/>
+            </div>
+          </div>
+          <div class="flex items-center gap-4">
+            <!-- Language Switcher -->
+            <div class="relative" x-data="{ open: false }">
+              <button 
+                @click="open = !open" 
+                class="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                :aria-expanded="open"
+                :aria-label="'{{ _('change_language') }}'"
+              >
+                <span class="text-lg">{{ '🇸🇦' if g.lang == 'ar' else '🇺🇸' }}</span>
+                <span class="hidden sm:inline">{{ 'العربية' if g.lang == 'ar' else 'English' }}</span>
+                <span class="material-symbols-outlined text-base">expand_more</span>
+              </button>
+              <div 
+                x-show="open"
+                @click.away="open = false"
+                x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-75"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                class="absolute {{ 'left-0' if g.lang == 'ar' else 'right-0' }} mt-2 w-40 origin-top-right rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                style="display: none;"
+                role="menu"
+                aria-orientation="vertical"
+                aria-labelledby="language-menu"
+              >
+                <div class="py-1" role="none">
+                  <button 
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 lang-btn {% if g.lang == 'en' %}bg-gray-100 dark:bg-gray-700{% endif %}"
+                    data-lang="en"
+                    role="menuitem"
+                    :aria-pressed="{{ 'true' if g.lang == 'en' else 'false' }}"
+                  >
+                    <span>🇺🇸</span>
+                    <span>English</span>
+                    {% if g.lang == 'en' %}
+                      <span class="material-symbols-outlined text-sm ml-auto">check</span>
+                    {% endif %}
+                  </button>
+                  <button 
+                    class="w-full text-right px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 lang-btn {% if g.lang == 'ar' %}bg-gray-100 dark:bg-gray-700{% endif %}"
+                    data-lang="ar"
+                    role="menuitem"
+                    :aria-pressed="{{ 'true' if g.lang == 'ar' else 'false' }}"
+                    dir="rtl"
+                  >
+                    <span>🇸🇦</span>
+                    <span>العربية</span>
+                    {% if g.lang == 'ar' %}
+                      <span class="material-symbols-outlined text-sm mr-auto">check</span>
+                    {% endif %}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- End Language Switcher -->
+            
+            <!-- Notifications -->
+            <button class="text-gray-500 hover:text-[var(--primary-color)] relative" title="{{ _('notifications') }}">
+              <span class="material-symbols-outlined">notifications</span>
+              <span class="absolute top-0 right-0 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white"></span>
+            </button>
+            <div class="flex items-center gap-3">
+              {% set display_name = (session.user.name if session.user and session.user.name else (session.user.email if session.user else 'User')) %}
+              <div class="h-10 w-10 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 text-white grid place-items-center font-semibold">
+                {{ display_name[:1]|upper }}
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-800">{{ display_name }}</p>
+                <p class="text-xs text-gray-500">{{ session.user.role if session.user and session.user.role else _('visitor') }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="p-6">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</div>
+  {% endif %}
+  
+  <!-- Alpine.js for dropdown functionality -->
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  
+  <!-- Search functionality -->
+  <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+  
+  <!-- Language Switcher -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const langButtons = document.querySelectorAll('.lang-btn');
+      const currentLang = '{{ g.lang }}' || 'en';
+      
+      // Set initial language
+      updatePageLanguage(currentLang);
+      
+      // Add click handlers for language buttons
+      langButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const lang = this.getAttribute('data-lang');
+          if (lang && lang !== currentLang) {
+            setLanguage(lang);
+          }
+        });
+      });
+      
+      // Function to update page language
+      function updatePageLanguage(lang) {
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        
+        // Update active button
+        langButtons.forEach(btn => {
+          if (btn.getAttribute('data-lang') === lang) {
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
+          } else {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+          }
+        });
+        
+        // Update any language-specific classes
+        document.body.classList.toggle('rtl', lang === 'ar');
+        document.body.classList.toggle('ltr', lang !== 'ar');
+      }
+      
+      // Function to set language via AJAX
+      function setLanguage(lang) {
+        fetch(`/set_language/${lang}`, {
+          method: 'GET',
+          credentials: 'same-origin',
+          headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            // Update the page without full reload if possible
+            updatePageLanguage(data.language);
+            // Force a full page reload to ensure all translations are applied
+            window.location.reload();
+          } else {
+            console.error('Failed to change language:', data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error changing language:', error);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <div class="mb-8">
+    <a href="{{ url_for('suppliers') }}" class="inline-flex items-center text-cyan-600 hover:text-cyan-800 mb-4">
+      <span class="material-symbols-outlined text-lg {{ 'ml-1' if g.lang == 'ar' else 'mr-1' }}">arrow_back</span>
+      {{ _('back_to_suppliers') }}
+    </a>
+    <h2 class="text-2xl font-bold text-gray-800">{{ _('add_new_supplier') }}</h2>
+    <p class="text-gray-600">{{ _('fill_supplier_details') }}</p>
+  </div>
+
+  <div class="card p-6">
+    <form action="{{ url_for('add_supplier_submit') }}" method="POST" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Basic Information -->
+        <div class="space-y-6">
+          <h3 class="text-lg font-medium text-gray-900 border-b pb-2">{{ _('basic_information') }}</h3>
+          
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">{{ _('supplier_name') }} *</label>
+            <input type="text" id="name" name="name" required
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
+                   dir="{{ 'rtl' if g.lang == 'ar' else 'ltr' }}">
+          </div>
+
+          <div>
+            <label for="contact_person" class="block text-sm font-medium text-gray-700">{{ _('contact_person') }}</label>
+            <input type="text" id="contact_person" name="contact_person"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
+                   dir="{{ 'rtl' if g.lang == 'ar' else 'ltr' }}">
+          </div>
+
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700">{{ _('email') }}</label>
+            <input type="email" id="email" name="email"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
+                   dir="ltr">
+          </div>
+
+          <div>
+            <label for="phone" class="block text-sm font-medium text-gray-700">{{ _('phone_number') }}</label>
+            <input type="tel" id="phone" name="phone"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
+                   dir="ltr">
+          </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="space-y-6">
+          <h3 class="text-lg font-medium text-gray-900 border-b pb-2">{{ _('additional_information') }}</h3>
+          
+          <div>
+            <label for="address" class="block text-sm font-medium text-gray-700">{{ _('address') }}</label>
+            <textarea id="address" name="address" rows="3" dir="{{ 'rtl' if g.lang == 'ar' else 'ltr' }}"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"></textarea>
+          </div>
+
+          <div>
+            <label for="tax_id" class="block text-sm font-medium text-gray-700">{{ _('tax_id') }}</label>
+            <input type="text" id="tax_id" name="tax_id"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
+                   dir="ltr">
+          </div>
+
+          <div>
+            <label for="payment_terms" class="block text-sm font-medium text-gray-700">{{ _('payment_terms') }}</label>
+            <input type="text" id="payment_terms" name="payment_terms" placeholder="{{ _('e.g., Net 30') }}"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"
+                   dir="{{ 'rtl' if g.lang == 'ar' else 'ltr' }}">
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div>
+        <label for="notes" class="block text-sm font-medium text-gray-700">{{ _('notes') }}</label>
+        <textarea id="notes" name="notes" rows="3" dir="{{ 'rtl' if g.lang == 'ar' else 'ltr' }}"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500"></textarea>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+        <a href="{{ url_for('suppliers') }}" class="btn-secondary">
+          {{ _('cancel') }}
+        </a>
+        <button type="submit" class="btn-primary">
+          <span class="material-symbols-outlined text-lg {{ 'ml-1' if g.lang == 'ar' else 'mr-1' }}">save</span>
+          {{ _('save_supplier') }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
