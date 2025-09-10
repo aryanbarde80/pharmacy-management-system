@@ -108,13 +108,13 @@ kicksup/
 
 ## 📱 Screenshots
 
-### Dashboard Analytics
-![Dashboard](static/pic/dashboard.png)
-*Real-time pharmacy analytics with interactive charts and key performance metrics*
-
 ### Login & Authentication
 ![Login](static/pic/login.png)
 *Secure Firebase-based authentication system*
+
+### Dashboard Analytics
+![Dashboard](static/pic/dashboard.png)
+*Real-time pharmacy analytics with interactive charts and key performance metrics*
 
 ### Inventory Management
 ![Inventory](static/pic/inventory.png)
