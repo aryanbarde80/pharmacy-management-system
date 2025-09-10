@@ -207,7 +207,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Contact
 
-Project Link: [https://github.com/DAVIXSX/pharmacy-management-system](https://github.com/DAVIXSX/pharmacy-management-system)
+📧 Email: [nexgendev.davis@gmail.com](mailto:nexgendev.davis@gmail.com)
 
 ## 🚀 Live Demo
 
