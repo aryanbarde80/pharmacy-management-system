@@ -27,7 +27,6 @@ KicksUp (PharmaSys) is a comprehensive pharmacy management system built with Fla
 - **Frontend**: HTML5, CSS3, JavaScript with Jinja2 templates
 - **Authentication**: Firebase Authentication
 - **Storage**: Google Cloud Storage (optional)
-- **Deployment**: Render-ready with one-click deployment
 
 ## 📦 Installation & Setup
 
@@ -151,39 +150,6 @@ kicksup/
 6. **Suppliers**: Maintain supplier relationships and purchase history
 7. **Reports**: Generate comprehensive business reports
 
-## 🌐 Deployment
-
-### Deploy to Render (Recommended)
-
-1. **One-click deployment**
-   - Ensure your code is pushed to GitHub
-   - Click the deploy button below:
-   
-   [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/DAVIXSX/pharmacy-management-system)
-
-2. **Deployment process**
-   - Creates a Web Service with Python runtime
-   - Installs dependencies from `requirements.txt`
-   - Starts the server with: `gunicorn app:app --bind 0.0.0.0:$PORT`
-
-3. **Environment configuration**
-   Configure these variables in the Render dashboard:
-   - `FLASK_SECRET_KEY`: Auto-generated (you can rotate later)
-   - `FIREBASE_STORAGE_BUCKET`: Your Firebase storage bucket (optional)
-   - `GOOGLE_APPLICATION_CREDENTIALS`: Path to uploaded service account JSON (optional)
-
-4. **Post-deployment**
-   - Render will provide a public URL when deployment completes
-   - Without Firebase credentials, the app runs with mock data
-   - Upload Firebase credentials for full functionality
-
-### Alternative Deployment Options
-
-- **Heroku**: Compatible with Heroku's Python buildpack
-- **Railway**: Deploy using Railway's GitHub integration
-- **PythonAnywhere**: Upload files and configure WSGI
-- **DigitalOcean App Platform**: One-click deployment available
-
 ## 📚 Documentation & Support
 
 - **Templates**: Located in `templates/` directory, using Jinja2 templating
@@ -208,10 +174,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Contact
 
 📧 Email: [nexgendev.davis@gmail.com](mailto:nexgendev.davis@gmail.com)
-
-## 🚀 Live Demo
-
-*Coming soon - deployment in progress*
 
 ---
 
