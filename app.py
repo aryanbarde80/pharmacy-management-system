@@ -4,16 +4,19 @@ import base64
 from datetime import datetime, timezone, timedelta
 from functools import wraps
 from flask import Flask, render_template, redirect, url_for, session, flash, request, jsonify, make_response, g
-import firebase_admin
-from firebase_admin import auth, credentials, firestore
-from firebase_config import initialize_firebase
-import os
 from flask_cors import CORS
 from translations import get_translation
+from firebase_admin import auth, credentials, firestore
+from firebase_config import initialize_firebase
+from dotenv import load_dotenv
+from google.oauth2 import id_token as google_id_token
+from google.auth.transport import requests as google_requests
+
+# Load environment variables from .env if present (dev convenience)
+load_dotenv()
 
 # Initialize Firebase using environment configuration (safe for open source)
 try:
-    from firebase_config import initialize_firebase
     db, bucket = initialize_firebase()
 except Exception as e:
     print(f"Firebase initialization warning: {str(e)}")
@@ -150,16 +153,67 @@ def verify_token():
             print(f"[verify-token] Failed to decode token (non-fatal): {decode_err}")
 
         # Verify the ID token
-        decoded_token = auth.verify_id_token(id_token)
-        uid = decoded_token['uid']
+        decoded_token = None
+        uid = None
+        try:
+            # Prefer Admin SDK when initialized
+            clock_skew = int(os.environ.get('AUTH_CLOCK_SKEW_SECONDS', '300'))
+            decoded_token = auth.verify_id_token(id_token, clock_skew_seconds=clock_skew)
+            uid = decoded_token.get('uid') or decoded_token.get('sub')
+        except Exception as admin_verify_err:
+            # Fallback: verify using google-auth without requiring Admin app
+            try:
+                aud = os.environ.get('FIREBASE_PROJECT_ID') or os.environ.get('GCLOUD_PROJECT')
+                if not aud:
+                    try:
+                        header_b64, payload_b64, _sig = id_token.split('.')
+                        def b64url_decode(b):
+                            b += '=' * (-len(b) % 4)
+                            return base64.urlsafe_b64decode(b.encode('utf-8')).decode('utf-8')
+                        payload = json.loads(b64url_decode(payload_b64))
+                        aud = payload.get('aud')
+                    except Exception:
+                        aud = None
+                req = google_requests.Request()
+                clock_skew = int(os.environ.get('AUTH_CLOCK_SKEW_SECONDS', '300'))
+                try:
+                    decoded_token = google_id_token.verify_firebase_token(id_token, req, audience=aud, clock_skew_in_seconds=clock_skew)
+                except TypeError:
+                    # Older google-auth versions may not support clock_skew_in_seconds
+                    decoded_token = google_id_token.verify_firebase_token(id_token, req, audience=aud)
+                uid = decoded_token.get('uid') or decoded_token.get('sub')
+            except Exception as e2:
+                print(f"[verify-token] Token verification failed: {e2}")
+                raise
+        if not uid:
+            return jsonify({'error': 'Authentication failed'}), 401
         print(f"[verify-token] Token verified for uid={uid}")
         
-        # Get or create the user's data in Firestore
-        user_ref = db.collection('users').document(uid)
-        user_doc = user_ref.get()
+        # Get or create the user's data in Firestore (if available); otherwise minimal session only
+        user_data = None
+        if db is not None:
+            user_ref = db.collection('users').document(uid)
+            user_doc = user_ref.get()
 
-        if not user_doc.exists:
-            # Auto-provision a minimal user profile if none exists
+            if not user_doc.exists:
+                # Auto-provision a minimal user profile if none exists
+                default_name = (decoded_token.get('name')
+                                or (decoded_token.get('email') or '').split('@')[0]
+                                or 'User')
+                user_data = {
+                    'email': decoded_token.get('email'),
+                    'name': default_name,
+                    'role': 'user',
+                    'created_at': firestore.SERVER_TIMESTAMP,
+                    'last_login_at': firestore.SERVER_TIMESTAMP,
+                }
+                user_ref.set(user_data, merge=True)
+            else:
+                user_data = user_doc.to_dict()
+                # Update last login time
+                user_ref.update({'last_login_at': firestore.SERVER_TIMESTAMP})
+        else:
+            # DB not configured; create minimal user data from token claims
             default_name = (decoded_token.get('name')
                             or (decoded_token.get('email') or '').split('@')[0]
                             or 'User')
@@ -167,14 +221,7 @@ def verify_token():
                 'email': decoded_token.get('email'),
                 'name': default_name,
                 'role': 'user',
-                'created_at': firestore.SERVER_TIMESTAMP,
-                'last_login_at': firestore.SERVER_TIMESTAMP,
             }
-            user_ref.set(user_data, merge=True)
-        else:
-            user_data = user_doc.to_dict()
-            # Update last login time
-            user_ref.update({'last_login_at': firestore.SERVER_TIMESTAMP})
 
         # Set up the session
         session.permanent = True

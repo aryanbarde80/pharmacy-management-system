@@ -20,6 +20,10 @@ env/
 
 # Firebase credentials (keep service accounts out of the repo)
 firebase/*.json
+credentials/
+serviceAccount*.json
+firebase_credentials.json
+firebase-key.json
 
 # Caches and reports
 .pytest_cache/
@@ -43,3 +47,5 @@ Thumbs.db
 # Static build output (uncomment if you generate these)
 # staticfiles/
 
+# Ignore nested repos or old clones
+pharmacy-management-system/

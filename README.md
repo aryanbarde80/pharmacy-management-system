@@ -1,4 +1,4 @@
-# KicksUp (PharmaSys) - Modern Pharmacy Management System
+# (PharmaSys) - Modern Pharmacy Management System
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg)](https://flask.palletsprojects.com/)
