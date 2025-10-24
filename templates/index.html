@@ -2,25 +2,23 @@
 {% block content %}
 <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
   <div>
-    <h2 class="text-3xl font-bold text-gray-800 page-title">{{ _('dashboard') }}</h2>
-    <p class="mt-1 text-gray-500">{{ _('welcome') }} — {{ _('welcome_subtitle') }}</p>
+    <h2 class="text-3xl font-bold text-gray-800 page-title">Dashboard</h2>
+    <p class="mt-1 text-gray-500">Welcome back — Here's your pharmacy overview</p>
   </div>
   <div class="mt-4 md:mt-0">
     <button class="btn-primary flex items-center gap-2">
       <span class="material-symbols-outlined text-lg">add</span>
-      {{ _('new_order') }}
+      New Order
     </button>
   </div>
 </div>
-
-<!-- removed RTL-only styles; site is now LTR/English -->
 
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
   <div class="card hover-raise p-5 fade-in group" style="--delay:.05s">
     <div class="flex items-center justify-between">
       <div>
-  <p class="text-sm font-medium text-gray-500">{{ _('medicines') }}</p>
+        <p class="text-sm font-medium text-gray-500">Medicines</p>
         <p class="mt-1 text-2xl font-bold text-gray-800">{{ stats.total_medicines }}</p>
       </div>
       <div class="p-3 rounded-lg bg-cyan-50 text-cyan-600 group-hover:bg-cyan-100 transition-colors">
@@ -32,8 +30,8 @@
   <div class="card hover-raise p-5 fade-in group" style="--delay:.12s">
     <div class="flex items-center justify-between">
       <div>
-  <p class="text-sm font-medium text-gray-500">{{ _('expiring_soon') }}</p>
-  <p class="mt-1 text-2xl font-bold text-gray-800">{{ stats.expiring_soon }}</p>
+        <p class="text-sm font-medium text-gray-500">Expiring Soon</p>
+        <p class="mt-1 text-2xl font-bold text-gray-800">{{ stats.expiring_soon }}</p>
       </div>
       <div class="p-3 rounded-lg bg-amber-50 text-amber-600 group-hover:bg-amber-100 transition-colors">
         <span class="material-symbols-outlined">warning</span>
@@ -44,7 +42,7 @@
   <div class="card hover-raise p-5 fade-in group" style="--delay:.18s">
     <div class="flex items-center justify-between">
       <div>
-  <p class="text-sm font-medium text-gray-500">{{ _('active_prescriptions') }}</p>
+        <p class="text-sm font-medium text-gray-500">Active Prescriptions</p>
         <p class="mt-1 text-2xl font-bold text-gray-800">{{ stats.active_prescriptions }}</p>
       </div>
       <div class="p-3 rounded-lg bg-purple-50 text-purple-600 group-hover:bg-purple-100 transition-colors">
@@ -56,7 +54,7 @@
   <div class="card hover-raise p-5 fade-in group" style="--delay:.25s">
     <div class="flex items-center justify-between">
       <div>
-  <p class="text-sm font-medium text-gray-500">{{ _('low_stock') }}</p>
+        <p class="text-sm font-medium text-gray-500">Low Stock Items</p>
         <p class="mt-1 text-2xl font-bold text-gray-800">{{ stats.low_inventory }}</p>
       </div>
       <div class="p-3 rounded-lg bg-rose-50 text-rose-600 group-hover:bg-rose-100 transition-colors">
@@ -72,12 +70,12 @@
   <div class="card p-5 fade-in hover-raise xl:col-span-2" style="--delay:.32s">
     <div class="flex justify-between items-center mb-4">
       <div>
-  <h3 class="text-lg font-semibold text-gray-800">{{ _('revenue_overview') }}</h3>
-  <p class="text-sm text-gray-500">{{ _('last_6_months') }}</p>
+        <h3 class="text-lg font-semibold text-gray-800">Revenue Overview</h3>
+        <p class="text-sm text-gray-500">Last 6 months performance</p>
       </div>
       <div class="flex items-center gap-2">
-  <button class="px-3 py-1 text-sm rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">{{ _('monthly') }}</button>
-  <button class="px-3 py-1 text-sm rounded-lg text-gray-500 hover:bg-gray-100">{{ _('weekly') }}</button>
+        <button class="px-3 py-1 text-sm rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">Monthly</button>
+        <button class="px-3 py-1 text-sm rounded-lg text-gray-500 hover:bg-gray-100">Weekly</button>
       </div>
     </div>
     <div class="chart-wrap" style="height: 280px">
@@ -85,7 +83,39 @@
     </div>
   </div>
 
-  <!-- Quick Stats and Recent Activity removed (fake content) -->
+  <!-- Quick Stats -->
+  <div class="card p-5 fade-in hover-raise" style="--delay:.4s">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+    <div class="space-y-3">
+      <a href="{{ url_for('medicines') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+        <div class="p-2 rounded-lg bg-cyan-50 text-cyan-600">
+          <span class="material-symbols-outlined">medication</span>
+        </div>
+        <div>
+          <p class="font-medium text-gray-800">Manage Medicines</p>
+          <p class="text-sm text-gray-500">Add or update inventory</p>
+        </div>
+      </a>
+      <a href="{{ url_for('orders') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+        <div class="p-2 rounded-lg bg-green-50 text-green-600">
+          <span class="material-symbols-outlined">receipt_long</span>
+        </div>
+        <div>
+          <p class="font-medium text-gray-800">View Orders</p>
+          <p class="text-sm text-gray-500">Process new orders</p>
+        </div>
+      </a>
+      <a href="{{ url_for('inventory') }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+        <div class="p-2 rounded-lg bg-amber-50 text-amber-600">
+          <span class="material-symbols-outlined">inventory_2</span>
+        </div>
+        <div>
+          <p class="font-medium text-gray-800">Check Inventory</p>
+          <p class="text-sm text-gray-500">Monitor stock levels</p>
+        </div>
+      </a>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -104,7 +134,7 @@
       data: {
         labels: chartData.months,
         datasets: [{
-          label: "{{ _('revenue') }}",
+          label: "Revenue",
           data: chartData.sales,
           borderColor: '#06b6d4',
           backgroundColor: gradient,
@@ -132,7 +162,7 @@
             boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
             callbacks: {
               label: function(context) {
-                return `{{ _('currency') }} ${context.parsed.y.toLocaleString()}`;
+                return `$${context.parsed.y.toLocaleString()}`;
               }
             }
           }
@@ -156,7 +186,7 @@
             ticks: {
               color: '#6b7280',
               callback: function(value) {
-                return `{{ _('currency') }} ${value.toLocaleString()}`;
+                return `$${value.toLocaleString()}`;
               }
             }
           } 
