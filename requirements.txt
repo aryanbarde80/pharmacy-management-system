@@ -1,10 +1,12 @@
-Flask>=2.0.0
-firebase-admin>=6.0.0
-python-dotenv>=1.0.0
-google-cloud-firestore>=2.0.0
-google-cloud-storage>=2.0.0
-python-jose>=3.3.0
-requests>=2.25.0
-Werkzeug>=2.0.0
-Jinja2>=3.0.0
-flask-cors>=4.0.0
+# Specific, tested versions for deployment
+Flask==2.3.3
+firebase-admin==6.5.0
+gunicorn==21.2.0
+python-dotenv==1.0.0
+google-cloud-firestore==2.11.0
+google-cloud-storage==2.8.0
+python-jose==3.3.0
+requests==2.31.0
+Werkzeug==2.3.7
+Jinja2==3.1.2
+flask-cors==4.0.0
