@@ -1,21 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="{% if lang == 'ar' %}rtl{% endif %}">
+<div class="ltr">
   <div class="flex items-center justify-between mb-6 flex-col sm:flex-row gap-4">
-    <div class="text-center sm:text-right w-full">
-      <h2 class="text-2xl font-bold text-gray-800 dark:text-white">{{ _('create_order') }}</h2>
-      <p class="text-sm text-gray-500 dark:text-gray-400">{{ _('order_details') }}</p>
+    <div class="text-center sm:text-left w-full">
+      <h2 class="text-2xl font-bold text-gray-800">Create New Order</h2>
+      <p class="text-sm text-gray-500">Add items and supplier details for this order</p>
     </div>
     <div class="w-full sm:w-auto">
       <a href="{{ url_for('orders') }}" class="btn-ghost w-full sm:w-auto text-center">
-        <i class="fas fa-arrow-{{ 'left' if lang == 'en' else 'right' }} mr-2"></i>
-        {{ _('back_to_orders') }}
+        <i class="fas fa-arrow-left mr-2"></i>
+        Back to Orders
       </a>
     </div>
   </div>
 
-  <form action="{{ url_for('create_order_submit') }}" method="post" class="space-y-6 card p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+  <form action="{{ url_for('create_order_submit') }}" method="post" class="space-y-6 card p-6 bg-white rounded-lg shadow">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
@@ -28,30 +28,30 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="space-y-2">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ _('supplier') }}</label>
+        <label class="block text-sm font-medium text-gray-700">Supplier</label>
         <select name="supplier" class="form-input w-full mt-1" required>
-          <option value="">{{ _('select_supplier') }}</option>
+          <option value="">Select a supplier</option>
           {% for s in suppliers %}
             <option value="{{ s.id }}">{{ s.name or s.company or s.id }}</option>
           {% endfor %}
         </select>
-        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ _('or_enter_new') }}</p>
-        <input type="text" name="supplier_text" class="form-input w-full mt-1" placeholder="{{ _('new_supplier_placeholder') }}">
+        <p class="text-xs text-gray-500 mt-1">Or enter a new supplier</p>
+        <input type="text" name="supplier_text" class="form-input w-full mt-1" placeholder="New supplier name">
       </div>
 
       <div class="space-y-2">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ _('order_date') }}</label>
+        <label class="block text-sm font-medium text-gray-700">Order Date</label>
         <input type="date" name="order_date" class="form-input w-full mt-1">
-        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ _('optional_date') }}</p>
+        <p class="text-xs text-gray-500 mt-1">Leave empty for current date</p>
       </div>
     </div>
 
     <div class="space-y-4">
-      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ _('order_items') }}</label>
+      <label class="block text-sm font-medium text-gray-700">Order Items</label>
       <div id="order-lines" class="space-y-3">
-        <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center order-line p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+        <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center order-line p-3 bg-gray-50 rounded-lg">
           <select name="item_id[]" class="form-input flex-1 w-full" required>
-            <option value="">{{ _('select_item') }}</option>
+            <option value="">Select an item</option>
             {% for it in items %}
               <option value="{{ it.id }}" data-stock="{{ it.stock_quantity or 0 }}">
                 {{ it.name or it.id }} {% if it.category %}- {{ it.category }}{% endif %}
@@ -60,7 +60,7 @@
           </select>
           <div class="flex items-center gap-2 w-full sm:w-auto">
             <input type="number" name="quantity[]" min="1" value="1" class="form-input w-24 text-center" required>
-            <button type="button" class="btn-ghost remove-line text-red-600 dark:text-red-400" title="{{ _('remove') }}">
+            <button type="button" class="btn-ghost remove-line text-red-600" title="Remove item">
               <i class="fas fa-trash"></i>
             </button>
           </div>
@@ -70,18 +70,18 @@
       <div class="mt-2">
         <button type="button" id="add-line" class="btn-secondary">
           <i class="fas fa-plus mr-2"></i>
-          {{ _('add_item') }}
+          Add Another Item
         </button>
       </div>
     </div>
 
-    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200">
       <a href="{{ url_for('orders') }}" class="btn-ghost text-center">
-        {{ _('cancel') }}
+        Cancel
       </a>
       <button type="submit" class="btn-primary">
         <i class="fas fa-save mr-2"></i>
-        {{ _('create_order_btn') }}
+        Create Order
       </button>
     </div>
   </form>
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const maxStock = parseInt(selectedOption.dataset.stock) || 0;
     
     if (parseInt(input.value) > maxStock) {
-      input.setCustomValidity(`{{ _('max_stock') }}: ${maxStock}`);
+      input.setCustomValidity(`Maximum stock available: ${maxStock}`);
       input.reportValidity();
     } else {
       input.setCustomValidity('');
@@ -172,32 +172,16 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-/* RTL Support */
-.rtl [dir="rtl"] .rtl\:mr-2 {
-  margin-right: 0 !important;
-  margin-left: 0.5rem !important;
-}
-
-/* Dark mode adjustments */
-.dark .form-input {
-  @apply bg-gray-700 border-gray-600 text-white;
-}
-
-.dark .form-input:focus {
-  @apply border-blue-500 ring-blue-500;
-}
-
-.dark .btn-ghost {
-  @apply text-gray-200 hover:bg-gray-700;
-}
-
-/* Responsive adjustments */n@media (max-width: 640px) {
+/* Responsive adjustments */
+@media (max-width: 640px) {
   .order-line {
-    @apply flex-col items-stretch gap-2;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
   }
   
   .order-line .form-input {
-    @apply w-full;
+    width: 100%;
   }
 }
 </style>
