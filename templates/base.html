@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="{{ g.lang }}" dir="{% if g.lang == 'ar' %}rtl{% else %}ltr{% endif %}">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ _('pharmacy_management') }}</title>
+  <title>Pharmacy Management System</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -48,20 +48,6 @@
       background-color: #f3f4f6;
       color: #0ea5a6;
       font-weight: 500;
-    }
-    
-    .lang-switcher .dropdown button[dir="rtl"] {
-      text-align: right;
-    }
-    
-    /* Flag icon styles */
-    .flag-icon {
-      font-size: 1.25rem;
-      line-height: 1;
-    }
-    
-    [dir="rtl"] {
-      text-align: right;
     }
     
     /* Theme tokens */
@@ -221,7 +207,7 @@
     @media (max-width:1024px){ .sidebar{ position:fixed; transform:translateX(-6px) } }
   </style>
 </head>
-  <body class="text-gray-800" dir="{% if g.lang == 'ar' %}rtl{% else %}ltr{% endif %}">
+  <body class="text-gray-800" dir="ltr">
   <!-- Flash Messages -->
   <div class="fixed top-4 right-4 z-50 w-96">
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -252,7 +238,7 @@
           <path d="M13.8261 17.4264C16.7203 18.1174 20.2244 18.5217 24 18.5217C27.7756 18.5217 31.2797 18.1174 34.1739 17.4264C36.9144 16.7722 39.9967 15.2331 41.3563 14.1648L24.8486 40.6391C24.4571 41.267 23.5429 41.267 23.1514 40.6391L6.64374 14.1648C8.00331 15.2331 11.0856 16.7722 13.8261 17.4264Z" fill="currentColor"></path>
           <path clip-rule="evenodd" d="M39.998 12.236C39.9944 12.2537 39.9875 12.2845 39.9748 12.3294C39.9436 12.4399 39.8949 12.5741 39.8346 12.7175C39.8168 12.7597 39.7989 12.8007 39.7813 12.8398C38.5103 13.7113 35.9788 14.9393 33.7095 15.4811C30.9875 16.131 27.6413 16.5217 24 16.5217C20.3587 16.5217 17.0125 16.131 14.2905 15.4811C12.0012 14.9346 9.44505 13.6897 8.18538 12.8168C8.17384 12.7925 8.16216 12.767 8.15052 12.7408C8.09919 12.6249 8.05721 12.5114 8.02977 12.411C8.00356 12.3152 8.00039 12.2667 8.00004 12.2612C8.00004 12.261 8 12.2607 8.00004 12.2612C8.00004 12.2359 8.0104 11.9233 8.68485 11.3686C9.34546 10.8254 10.4222 10.2469 11.9291 9.72276C14.9242 8.68098 19.1919 8 24 8C28.8081 8 33.0758 8.68098 36.0709 9.72276C37.5778 10.2469 38.6545 10.8254 39.3151 11.3686C39.9006 11.8501 39.9857 12.1489 39.998 12.236Z" fill="currentColor" fill-rule="evenodd"></path>
         </svg>
-  <span>{{ _('pharmacy_management') }}</span>
+  <span>Pharmacy Management</span>
       </div>
     </div>
     
@@ -261,31 +247,31 @@
       <div class="flex-1 space-y-1 px-2 py-4">
         <a href="{{ url_for('dashboard') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if active == 'dashboard' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
           <span class="material-symbols-outlined mr-3">dashboard</span>
-          {{ _('dashboard') }}
+          Dashboard
         </a>
         <a href="{{ url_for('medicines') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if active == 'medicines' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
           <span class="material-symbols-outlined mr-3">medication</span>
-          {{ _('medicines') }}
+          Medicines
         </a>
         <a href="{{ url_for('orders') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if active == 'orders' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
           <span class="material-symbols-outlined mr-3">receipt_long</span>
-          {{ _('orders') }}
+          Orders
         </a>
         <a href="{{ url_for('inventory') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if active == 'inventory' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
           <span class="material-symbols-outlined mr-3">inventory_2</span>
-          {{ _('inventory') }}
+          Inventory
         </a>
         <a href="{{ url_for('suppliers') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if active == 'suppliers' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
           <span class="material-symbols-outlined mr-3">local_shipping</span>
-          {{ _('suppliers') }}
+          Suppliers
         </a>
         <a href="{{ url_for('reports') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if active == 'reports' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
           <span class="material-symbols-outlined mr-3">bar_chart</span>
-          {{ _('reports') }}
+          Reports
         </a>
         <a href="{{ url_for('contact') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if active == 'contact' %}bg-gray-100 text-gray-900{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
           <span class="material-symbols-outlined mr-3">contact_support</span>
-          {{ _('contact') }}
+          Contact
         </a>
       </div>
     </nav>
@@ -320,11 +306,11 @@
             <div class="relative w-full max-w-xs">
               <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">search</span>
               <input class="w-full pl-10 pr-4 py-2 bg-gray-100 border border-transparent rounded-lg focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent transition text-gray-700 placeholder-gray-500" 
-                     placeholder="{{ _('search_placeholder') }}" 
+                     placeholder="Search medicines, orders, suppliers..." 
                      type="text"
                      id="global-search"
                      autocomplete="off"
-                     dir="{{ 'rtl' if g.lang == 'ar' else 'ltr' }}"/>
+                     dir="ltr"/>
             </div>
           </div>
           <div class="flex items-center gap-4">
@@ -334,10 +320,10 @@
                 @click="open = !open" 
                 class="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                 :aria-expanded="open"
-                :aria-label="'{{ _('change_language') }}'"
+                :aria-label="'Change language'"
               >
-                <span class="text-lg">{{ '🇸🇦' if g.lang == 'ar' else '🇺🇸' }}</span>
-                <span class="hidden sm:inline">{{ 'العربية' if g.lang == 'ar' else 'English' }}</span>
+                <span class="text-lg">🇺🇸</span>
+                <span class="hidden sm:inline">English</span>
                 <span class="material-symbols-outlined text-base">expand_more</span>
               </button>
               <div 
@@ -349,7 +335,7 @@
                 x-transition:leave="transition ease-in duration-75"
                 x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave-end="opacity-0 scale-95"
-                class="absolute {{ 'left-0' if g.lang == 'ar' else 'right-0' }} mt-2 w-40 origin-top-right rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                class="absolute right-0 mt-2 w-40 origin-top-right rounded-lg bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
                 style="display: none;"
                 role="menu"
                 aria-orientation="vertical"
@@ -357,29 +343,23 @@
               >
                 <div class="py-1" role="none">
                   <button 
-                    class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 lang-btn {% if g.lang == 'en' %}bg-gray-100 dark:bg-gray-700{% endif %}"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 lang-btn active"
                     data-lang="en"
                     role="menuitem"
-                    :aria-pressed="{{ 'true' if g.lang == 'en' else 'false' }}"
+                    aria-pressed="true"
                   >
                     <span>🇺🇸</span>
                     <span>English</span>
-                    {% if g.lang == 'en' %}
-                      <span class="material-symbols-outlined text-sm ml-auto">check</span>
-                    {% endif %}
+                    <span class="material-symbols-outlined text-sm ml-auto">check</span>
                   </button>
                   <button 
-                    class="w-full text-right px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 lang-btn {% if g.lang == 'ar' %}bg-gray-100 dark:bg-gray-700{% endif %}"
+                    class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 lang-btn"
                     data-lang="ar"
                     role="menuitem"
-                    :aria-pressed="{{ 'true' if g.lang == 'ar' else 'false' }}"
-                    dir="rtl"
+                    aria-pressed="false"
                   >
                     <span>🇸🇦</span>
                     <span>العربية</span>
-                    {% if g.lang == 'ar' %}
-                      <span class="material-symbols-outlined text-sm mr-auto">check</span>
-                    {% endif %}
                   </button>
                 </div>
               </div>
@@ -387,7 +367,7 @@
             <!-- End Language Switcher -->
             
             <!-- Notifications -->
-            <button class="text-gray-500 hover:text-[var(--primary-color)] relative" title="{{ _('notifications') }}">
+            <button class="text-gray-500 hover:text-[var(--primary-color)] relative" title="Notifications">
               <span class="material-symbols-outlined">notifications</span>
               <span class="absolute top-0 right-0 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white"></span>
             </button>
@@ -398,7 +378,7 @@
               </div>
               <div>
                 <p class="text-sm font-medium text-gray-800">{{ display_name }}</p>
-                <p class="text-xs text-gray-500">{{ session.user.role if session.user and session.user.role else _('visitor') }}</p>
+                <p class="text-xs text-gray-500">{{ session.user.role if session.user and session.user.role else 'Visitor' }}</p>
               </div>
             </div>
           </div>
@@ -423,7 +403,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const langButtons = document.querySelectorAll('.lang-btn');
-      const currentLang = '{{ g.lang }}' || 'en';
+      const currentLang = 'en';
       
       // Set initial language
       updatePageLanguage(currentLang);
